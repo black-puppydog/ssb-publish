@@ -10,7 +10,7 @@ use ssb_legacy_msg::Message;
 use ssb_legacy_msg_data::json::{from_slice, to_vec, DecodeJsonError};
 use ssb_legacy_msg_data::value::{Value, RidiculousStringMap};
 use ssb_legacy_msg_data::LegacyF64;
-use ssb_multiformats::multihash::{Target};
+use ssb_multiformats::multihash::Multihash;
 use ssb_multiformats::multikey::{Multisig, Multikey};
 use ssb_crypto::{SecretKey, PublicKey, sign_detached};
 
@@ -34,7 +34,6 @@ pub enum Error {
 type Result<T, E = Error> = std::result::Result<T, E>;
 
 pub use ssb_legacy_msg::Content;
-pub use ssb_multiformats::multihash::Multihash;
 
 /// Publish a new message.
 ///
@@ -181,7 +180,7 @@ where
 fn get_multihash_from_message_bytes(bytes: &[u8]) -> Multihash {
     let hashable_bytes = node_buffer_binary_serializer(&std::str::from_utf8(bytes).unwrap());
     let hash = Sha256::digest(&hashable_bytes);
-    Multihash::from_sha256(hash.into(), Target::Message)
+    Multihash::Message(hash.into())
 }
 fn node_buffer_binary_serializer(text: &str) -> Vec<u8> {
     text.encode_utf16()
